@@ -8,7 +8,7 @@ import { hm } from './time'
 import { initialState, terminalReducer } from './terminalReducer'
 import type { BioMode } from './types'
 import { useNow } from './useNow'
-import { useFitScale } from './useFitScale'
+import { fitScale } from './useFitScale'
 import { useViewport } from './useViewport'
 import { LockScreen } from './components/LockScreen'
 import { Dashboard } from './components/Dashboard'
@@ -72,8 +72,9 @@ export function App() {
     (state.bioMode === 'clockout' || state.bioMode === 'ack')
 
   // Fit the fixed 1344×824 kiosk canvas to whatever screen it runs on.
-  const scale = useFitScale(STAGE_W, STAGE_H)
-  const { isPhonePortrait } = useViewport()
+  const viewport = useViewport()
+  const scale = fitScale(viewport.w, viewport.h, STAGE_W, STAGE_H)
+  const { isPhonePortrait } = viewport
   const [rotateHintDismissed, setRotateHintDismissed] = useState(false)
 
   return (
