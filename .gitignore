@@ -15,3 +15,6 @@ dist-ssr
 
 # Local logs / temp
 *.log
+
+# TS incremental build cache
+tsconfig.tsbuildinfo
