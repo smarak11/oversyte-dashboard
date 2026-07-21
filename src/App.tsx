@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef } from 'react'
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import {
   DEMO_ALERT_DELAY_MS,
   SCAN_FINISH_MS,
@@ -8,10 +8,17 @@ import { hm } from './time'
 import { initialState, terminalReducer } from './terminalReducer'
 import type { BioMode } from './types'
 import { useNow } from './useNow'
+import { useFitScale } from './useFitScale'
+import { useViewport } from './useViewport'
 import { LockScreen } from './components/LockScreen'
 import { Dashboard } from './components/Dashboard'
 import { ReaderModule } from './components/ReaderModule'
+import { RotateHint } from './components/RotateHint'
 import { color } from './theme'
+
+// Fixed design canvas: 1200px tablet + 150px reader (−6px overlap) × 824px tall.
+const STAGE_W = 1344
+const STAGE_H = 824
 
 export function App() {
   const [state, dispatch] = useReducer(terminalReducer, initialState)
@@ -64,24 +71,45 @@ export function App() {
     state.screen === 'dashboard' &&
     (state.bioMode === 'clockout' || state.bioMode === 'ack')
 
+  // Fit the fixed 1344×824 kiosk canvas to whatever screen it runs on.
+  const scale = useFitScale(STAGE_W, STAGE_H)
+  const { isPhonePortrait } = useViewport()
+  const [rotateHintDismissed, setRotateHintDismissed] = useState(false)
+
   return (
+    <>
+    {isPhonePortrait && !rotateHintDismissed && (
+      <RotateHint onDismiss={() => setRotateHintDismissed(true)} />
+    )}
     <div
       style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 40,
+        position: 'fixed',
+        inset: 0,
+        overflow: 'hidden',
         background:
           'radial-gradient(1200px 700px at 50% -10%,#0d1418 0%,#05080a 70%)',
       }}
     >
-      {/* ===== TABLET ===== */}
+      {/* Scaled, centered stage holding the fixed-size terminal + reader. */}
       <div
         style={{
-          position: 'relative',
-          width: 1200,
-          height: 824,
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          width: STAGE_W,
+          height: STAGE_H,
+          display: 'flex',
+          alignItems: 'center',
+          transform: `translate(-50%, -50%) scale(${scale})`,
+          transformOrigin: 'center center',
+        }}
+      >
+        {/* ===== TABLET ===== */}
+        <div
+          style={{
+            position: 'relative',
+            width: 1200,
+            height: 824,
           background: color.tabletBody,
           borderRadius: 26,
           padding: 16,
@@ -142,12 +170,14 @@ export function App() {
         </div>
       </div>
 
-      {/* ===== DOCKED BIOMETRIC READER MODULE ===== */}
-      <ReaderModule
-        bioStep={state.bioStep}
-        bioMode={state.bioMode}
-        onTap={readerTap}
-      />
+        {/* ===== DOCKED BIOMETRIC READER MODULE ===== */}
+        <ReaderModule
+          bioStep={state.bioStep}
+          bioMode={state.bioMode}
+          onTap={readerTap}
+        />
+      </div>
     </div>
+    </>
   )
 }
