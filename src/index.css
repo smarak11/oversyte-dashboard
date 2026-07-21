@@ -1,0 +1,152 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #05080a;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: #3fd88a;
+  text-decoration: none;
+}
+a:hover {
+  color: #6fe6a8;
+}
+
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---- Animations (all from the design reference) ---- */
+@keyframes scanline {
+  0% {
+    top: 6%;
+  }
+  100% {
+    top: 94%;
+  }
+}
+@keyframes ringpulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  70% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes blink {
+  0%,
+  60% {
+    opacity: 1;
+  }
+  80%,
+  100% {
+    opacity: 0.2;
+  }
+}
+@keyframes bannerin {
+  0% {
+    transform: translateY(-18px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes fadein {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Subtle continuous drift so feed stills read as live motion.
+   In production this is replaced by a real moving video stream. */
+@keyframes feedlive {
+  0% {
+    transform: scale(1.08) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.13) translate(-1.5%, -1%);
+  }
+  100% {
+    transform: scale(1.08) translate(0, 0);
+  }
+}
+@keyframes flagpulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px #ff5145,
+      0 0 22px rgba(255, 81, 69, 0);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px #ff5145,
+      0 0 26px rgba(255, 81, 69, 0.45);
+  }
+}
+
+/* Hover states expressed as data-driven classes so we can keep the rest inline. */
+.hover-lift {
+  transition: border-color 0.15s ease;
+}
+.hover-lift:hover {
+  border-color: rgba(255, 255, 255, 0.22) !important;
+}
+
+/* Camera-tile expand affordance: dim by default, brightens on tile hover. */
+.cam-expand {
+  opacity: 0.45;
+  transition: opacity 0.15s ease;
+}
+[role='button']:hover .cam-expand,
+[role='button']:focus-visible .cam-expand {
+  opacity: 1;
+}
+.btn {
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+.btn-subtle:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+.btn-endshift:hover {
+  background: rgba(255, 81, 69, 0.12) !important;
+  border-color: rgba(255, 81, 69, 0.4) !important;
+  color: #ff8078 !important;
+}
+.btn-ack:hover {
+  background: #ff6a60 !important;
+}
