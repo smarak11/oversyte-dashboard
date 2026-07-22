@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 export interface Viewport {
   w: number
   h: number
+  /** Phone-sized in either orientation → use the reflowed mobile layout. */
+  isMobile: boolean
   /** Small screen in portrait orientation (i.e. a phone held upright). */
   isPhonePortrait: boolean
 }
@@ -10,7 +12,9 @@ export interface Viewport {
 function read(): Viewport {
   const w = typeof window === 'undefined' ? 1344 : window.innerWidth
   const h = typeof window === 'undefined' ? 824 : window.innerHeight
-  return { w, h, isPhonePortrait: w < 680 && h > w }
+  // A phone is small in its shorter dimension regardless of orientation.
+  const isMobile = Math.min(w, h) < 560
+  return { w, h, isMobile, isPhonePortrait: w < 680 && h > w }
 }
 
 /**

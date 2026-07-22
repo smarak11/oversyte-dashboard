@@ -1,24 +1,29 @@
 import { lockBioVisuals, overlaySubText } from '../bioVisuals'
 import { color } from '../theme'
+import { useMobile } from '../MobileContext'
 import type { BioMode, BioStep } from '../types'
 
 interface Props {
   mode: BioMode
   step: BioStep
   onCancel: () => void
+  /** Fresh-scan trigger. On phones the ring itself is the tap target. */
+  onScan?: () => void
 }
 
 /** End-shift / acknowledge confirm modal — forces a fresh fingerprint scan. */
-export function BioOverlay({ mode, step, onCancel }: Props) {
+export function BioOverlay({ mode, step, onCancel, onScan }: Props) {
   const scanning = step === 'scanning'
   const bio = lockBioVisuals(step)
   const tag = mode === 'ack' ? 'ALERT · ACKNOWLEDGE' : 'SHIFT · CLOCK-OUT'
   const title = mode === 'ack' ? 'Acknowledge alert' : 'End your shift'
+  const mobile = useMobile()
+  const ringTappable = mobile && step === 'idle'
 
   return (
     <div
       style={{
-        position: 'absolute',
+        position: mobile ? 'fixed' : 'absolute',
         inset: 0,
         zIndex: 50,
         display: 'flex',
@@ -50,6 +55,8 @@ export function BioOverlay({ mode, step, onCancel }: Props) {
         </div>
 
         <div
+          onClick={ringTappable ? onScan : undefined}
+          role={ringTappable ? 'button' : undefined}
           style={{
             margin: '22px auto 0',
             width: 120,
@@ -61,6 +68,7 @@ export function BioOverlay({ mode, step, onCancel }: Props) {
             justifyContent: 'center',
             background: '#0b1114',
             border: '1px solid rgba(255,255,255,.08)',
+            cursor: ringTappable ? 'pointer' : 'default',
           }}
         >
           {scanning && (
@@ -104,7 +112,7 @@ export function BioOverlay({ mode, step, onCancel }: Props) {
             lineHeight: 1.5,
           }}
         >
-          {overlaySubText(step)}
+          {ringTappable ? 'Tap the reader above to confirm.' : overlaySubText(step)}
         </div>
 
         <button

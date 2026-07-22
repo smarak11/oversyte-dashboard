@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { CAMERA_DEFS, FLAGGED_CAMERA_INDEX, feedImageUrl } from '../data'
 import { CCTV_FILTER, color } from '../theme'
+import { useMobile } from '../MobileContext'
 import type { ClipData } from '../types'
 
 interface Props {
@@ -52,12 +53,13 @@ export function ClipModal({ clip, onClose, onAck }: Props) {
 
   const pct = (elapsed / CLIP_SECONDS) * 100
   const fmt = (s: number) => `00:${String(Math.floor(s)).padStart(2, '0')}`
+  const mobile = useMobile()
 
   return (
     <div
       onClick={onClose}
       style={{
-        position: 'absolute',
+        position: mobile ? 'fixed' : 'absolute',
         inset: 0,
         zIndex: 50,
         display: 'flex',

@@ -3,6 +3,7 @@ import { RECORDING } from '../data'
 import { color } from '../theme'
 import { hms } from '../time'
 import { useNow } from '../useNow'
+import { useMobile } from '../MobileContext'
 import type { CameraDef } from '../types'
 import { CameraFeed } from './CameraFeed'
 
@@ -29,12 +30,13 @@ export function CameraModal({ cam, flagged, onClose }: Props) {
   }, [onClose])
 
   const accent = flagged ? color.red : color.green
+  const mobile = useMobile()
 
   return (
     <div
       onClick={onClose}
       style={{
-        position: 'absolute',
+        position: mobile ? 'fixed' : 'absolute',
         inset: 0,
         zIndex: 50,
         display: 'flex',

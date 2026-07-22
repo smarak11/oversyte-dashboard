@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
+import { useCallback, useEffect, useReducer, useRef } from 'react'
 import {
   DEMO_ALERT_DELAY_MS,
   SCAN_FINISH_MS,
@@ -13,7 +13,7 @@ import { useViewport } from './useViewport'
 import { LockScreen } from './components/LockScreen'
 import { Dashboard } from './components/Dashboard'
 import { ReaderModule } from './components/ReaderModule'
-import { RotateHint } from './components/RotateHint'
+import { MobileShell } from './components/MobileShell'
 import { color } from './theme'
 
 // Fixed design canvas: 1200px tablet + 150px reader (−6px overlap) × 824px tall.
@@ -71,17 +71,27 @@ export function App() {
     state.screen === 'dashboard' &&
     (state.bioMode === 'clockout' || state.bioMode === 'ack')
 
-  // Fit the fixed 1344×824 kiosk canvas to whatever screen it runs on.
   const viewport = useViewport()
+
+  // Phones get a reflowed, scrollable layout; larger screens get the kiosk.
+  if (viewport.isMobile) {
+    return (
+      <MobileShell
+        state={state}
+        now={now}
+        showBioOverlay={showBioOverlay}
+        onReaderTap={readerTap}
+        onEndShift={endShift}
+        onAckAlert={ackAlert}
+        onCancelBio={cancelBio}
+      />
+    )
+  }
+
+  // Fit the fixed 1344×824 kiosk canvas to whatever (larger) screen it's on.
   const scale = fitScale(viewport.w, viewport.h, STAGE_W, STAGE_H)
-  const { isPhonePortrait } = viewport
-  const [rotateHintDismissed, setRotateHintDismissed] = useState(false)
 
   return (
-    <>
-    {isPhonePortrait && !rotateHintDismissed && (
-      <RotateHint onDismiss={() => setRotateHintDismissed(true)} />
-    )}
     <div
       style={{
         position: 'fixed',
@@ -179,6 +189,5 @@ export function App() {
         />
       </div>
     </div>
-    </>
   )
 }
