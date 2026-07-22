@@ -6,6 +6,7 @@ import {
   RECORDING,
 } from '../data'
 import { MobileContext } from '../MobileContext'
+import { useViewport } from '../useViewport'
 import { activeAlertCount } from '../terminalReducer'
 import type { TerminalState } from '../terminalReducer'
 import { color, SITE } from '../theme'
@@ -43,6 +44,10 @@ export function MobileShell(props: Props) {
           background: color.screen,
           color: color.textPrimary,
           fontSize: 14,
+          // Respect notches in landscape (left/right); top/bottom handled by
+          // the header/footer so their backgrounds extend under the insets.
+          paddingLeft: 'env(safe-area-inset-left)',
+          paddingRight: 'env(safe-area-inset-right)',
         }}
       >
         {props.state.screen === 'lock' ? (
@@ -71,7 +76,8 @@ function MobileLock({ state, now, onReaderTap }: Props) {
         flexDirection: 'column',
         background:
           'radial-gradient(700px 500px at 60% 20%,#0e1620 0%,#080b0d 75%)',
-        padding: '22px 20px 32px',
+        padding:
+          'calc(22px + env(safe-area-inset-top)) 20px calc(32px + env(safe-area-inset-bottom))',
         gap: 4,
       }}
     >
@@ -225,6 +231,7 @@ function MobileDashboard({
 }: Props) {
   const showBanner = !!state.alert && !state.alertAck
   const activeAlerts = activeAlertCount(state)
+  const narrow = useViewport().w < 560
 
   const [openCamera, setOpenCamera] = useState<{ cam: (typeof CAMERA_DEFS)[number]; flagged: boolean } | null>(null)
   const [openClip, setOpenClip] = useState<ClipData | null>(null)
@@ -247,7 +254,7 @@ function MobileDashboard({
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 10,
-          padding: '14px 16px',
+          padding: 'calc(14px + env(safe-area-inset-top)) 16px 14px',
           borderBottom: '1px solid rgba(255,255,255,.06)',
           background: color.panelHeader,
           position: 'sticky',
@@ -296,6 +303,7 @@ function MobileDashboard({
       {showBanner && state.alert && (
         <AlertBanner
           alert={state.alert}
+          stack={narrow}
           onAck={onAckAlert}
           onViewClip={() => {
             const a = state.alert!
@@ -410,7 +418,7 @@ function MobileDashboard({
           display: 'flex',
           flexWrap: 'wrap',
           gap: 12,
-          padding: '12px 16px',
+          padding: '12px 16px calc(12px + env(safe-area-inset-bottom))',
           borderTop: '1px solid rgba(255,255,255,.06)',
           background: color.footer,
           fontSize: 9,

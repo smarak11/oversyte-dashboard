@@ -89,7 +89,10 @@ export function App() {
   }
 
   // Fit the fixed 1344×824 kiosk canvas to whatever (larger) screen it's on.
-  const scale = fitScale(viewport.w, viewport.h, STAGE_W, STAGE_H)
+  // Cap at 1.0 so on big/investor screens the terminal reads as a crisp,
+  // floating product mockup (bezel + reader + shadow) with breathing room,
+  // never upscaled or clipped at the edges.
+  const scale = fitScale(viewport.w, viewport.h, STAGE_W, STAGE_H, 48, 1)
 
   return (
     <div

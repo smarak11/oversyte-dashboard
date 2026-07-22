@@ -5,24 +5,27 @@ interface Props {
   alert: Alert
   onAck: () => void
   onViewClip: () => void
+  /** Stack the detail over full-width buttons (narrow phones). */
+  stack?: boolean
 }
 
-export function AlertBanner({ alert, onAck, onViewClip }: Props) {
+export function AlertBanner({ alert, onAck, onViewClip, stack = false }: Props) {
   return (
     <div
       style={{
         animation: 'bannerin .4s ease',
         display: 'flex',
-        alignItems: 'center',
+        flexDirection: stack ? 'column' : 'row',
+        alignItems: stack ? 'stretch' : 'center',
         justifyContent: 'space-between',
-        gap: 18,
-        padding: '13px 22px',
+        gap: stack ? 12 : 18,
+        padding: '13px 18px',
         background:
           'linear-gradient(90deg,rgba(255,81,69,.22),rgba(255,81,69,.08))',
         borderBottom: '1px solid rgba(255,81,69,.4)',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0 }}>
         <div
           style={{
             width: 30,
@@ -56,20 +59,29 @@ export function AlertBanner({ alert, onAck, onViewClip }: Props) {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: 10,
+          alignItems: 'center',
+          flexShrink: 0,
+        }}
+      >
         <button
           className="btn btn-subtle"
           onClick={onViewClip}
           style={{
             cursor: 'pointer',
+            flex: stack ? 1 : undefined,
             background: 'rgba(255,255,255,.06)',
             border: '1px solid rgba(255,255,255,.14)',
             color: '#fff',
             fontFamily: 'inherit',
             fontSize: 12,
             fontWeight: 500,
-            padding: '9px 14px',
+            padding: stack ? '11px 14px' : '9px 14px',
             borderRadius: 9,
+            whiteSpace: 'nowrap',
           }}
         >
           View clip
@@ -79,14 +91,16 @@ export function AlertBanner({ alert, onAck, onViewClip }: Props) {
           onClick={onAck}
           style={{
             cursor: 'pointer',
+            flex: stack ? 2 : undefined,
             background: color.red,
             border: 'none',
             color: color.screen,
             fontFamily: 'inherit',
             fontSize: 12,
             fontWeight: 700,
-            padding: '9px 16px',
+            padding: stack ? '11px 16px' : '9px 16px',
             borderRadius: 9,
+            whiteSpace: 'nowrap',
           }}
         >
           Acknowledge on reader →
